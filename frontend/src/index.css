@@ -1,0 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;600;800&display=swap');
+
+/* =====================================================
+   DARK THEME (default)
+   ===================================================== */
+:root,
+[data-theme='dark'] {
+  /* Backgrounds */
+  --bg-primary:    #04080F;
+  --bg-secondary:  #0A111A;
+  --bg-accent:     #111A28;
+  --bg-card:       rgba(10, 17, 26, 0.85);
+  --bg-card-solid: #0A111A;
+  --bg-node:       rgba(10, 17, 26, 0.85);
+  --bg-pill:       rgba(10, 17, 26, 0.70);
+  --bg-track:      rgba(0, 240, 255, 0.02);
+  --bg-explain:    rgba(10, 17, 26, 0.85);
+  --bg-dropdown:   rgba(10, 17, 26, 0.95);
+  --bg-nav:        rgba(10, 17, 26, 0.70);
+
+  /* Text */
+  --text-primary:   #f8fafc;
+  --text-secondary: #94a3b8;
+
+  /* Brand */
+  --brand-primary:   #00F0FF;
+  --brand-secondary: #8B5CF6;
+  --brand-danger:    #FF2A5F;
+  --brand-success:   #00FF9D;
+  --brand-warning:   #FFB000;
+
+  /* Borders & Glows */
+  --border-color:  rgba(0, 240, 255, 0.20);
+  --glow-color:    rgba(0, 240, 255, 0.35);
+  --glow-danger:   rgba(255, 42, 95, 0.40);
+  --glow-success:  rgba(0, 255, 157, 0.30);
+
+  /* Shadows */
+  --shadow-sm: 0 0 10px rgba(0, 0, 0, 0.50);
+  --shadow-md: 0 0 20px rgba(0, 0, 0, 0.80);
+
+  /* Grid overlay */
+  --grid-line: rgba(0, 240, 255, 0.03);
+
+  /* Inputs */
+  --input-focus-bg: rgba(0, 0, 0, 0.50);
+
+  /* Workflow icon bg */
+  --workflow-icon-bg: rgba(10, 17, 26, 0.85);
+
+  /* Col label bg */
+  --col-label-bg: rgba(0, 0, 0, 0.40);
+
+  /* Explain card inner shadow */
+  --explain-inner-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+
+  /* Navbar border */
+  --nav-border: rgba(0, 240, 255, 0.10);
+  --nav-shadow: 0 4px 20px rgba(0, 0, 0, 0.50);
+}
+
+/* =====================================================
+   LIGHT THEME
+   ===================================================== */
+[data-theme='light'] {
+  /* Backgrounds */
+  --bg-primary:    #f0f4f8;
+  --bg-secondary:  #ffffff;
+  --bg-accent:     #e2e8f0;
+  --bg-card:       rgba(255, 255, 255, 0.92);
+  --bg-card-solid: #ffffff;
+  --bg-node:       rgba(255, 255, 255, 0.95);
+  --bg-pill:       rgba(255, 255, 255, 0.80);
+  --bg-track:      rgba(0, 140, 200, 0.03);
+  --bg-explain:    rgba(255, 255, 255, 0.95);
+  --bg-dropdown:   rgba(255, 255, 255, 0.98);
+  --bg-nav:        rgba(255, 255, 255, 0.80);
+
+  /* Text */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+
+  /* Brand — use slightly deeper tones for legibility on white */
+  --brand-primary:   #0099cc;
+  --brand-secondary: #7C3AED;
+  --brand-danger:    #e11d48;
+  --brand-success:   #059669;
+  --brand-warning:   #d97706;
+
+  /* Borders & Glows */
+  --border-color: rgba(0, 153, 204, 0.30);
+  --glow-color:   rgba(0, 153, 204, 0.20);
+  --glow-danger:  rgba(225, 29, 72, 0.20);
+  --glow-success: rgba(5, 150, 105, 0.20);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.12);
+
+  /* Grid overlay */
+  --grid-line: rgba(0, 153, 204, 0.06);
+
+  /* Inputs */
+  --input-focus-bg: rgba(255, 255, 255, 1);
+
+  /* Workflow icon bg */
+  --workflow-icon-bg: #ffffff;
+
+  /* Col label bg */
+  --col-label-bg: rgba(240, 244, 248, 0.90);
+
+  /* Explain card inner shadow */
+  --explain-inner-shadow: inset 0 0 30px rgba(0,0,0,0.02);
+
+  /* Navbar border */
+  --nav-border: rgba(0, 153, 204, 0.15);
+  --nav-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   RESET & BASE
+   ===================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--text-primary);
+  transition: background-color 0.35s ease, color 0.35s ease;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =====================================================
+   TYPOGRAPHY
+   ===================================================== */
+:root {
+  --font-main: 'Outfit', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --radius: 4px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+a:hover { color: var(--brand-primary); }
+
+/* Headings — NO global text-align: center (set per-context instead) */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+
+.heading-center { text-align: center; }
+
+strong { font-family: var(--font-mono); font-weight: 500; }
+
+/* =====================================================
+   LAYOUT
+   ===================================================== */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main { flex: 1; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* =====================================================
+   UTILITIES
+   ===================================================== */
+.text-gradient {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-success));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary {
+  background-color: rgba(0, 153, 204, 0.10);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  box-shadow: inset 0 0 10px rgba(0, 153, 204, 0.08), 0 0 15px rgba(0, 153, 204, 0.15);
+}
+[data-theme='dark'] .btn-primary {
+  background-color: rgba(0, 240, 255, 0.10);
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.10), 0 0 15px rgba(0, 240, 255, 0.20);
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-primary);
+  color: #fff;
+  box-shadow: 0 0 25px var(--glow-color);
+}
+[data-theme='dark'] .btn-primary:hover { color: #000; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+.btn-outline:hover {
+  border-color: var(--brand-success);
+  color: var(--brand-success);
+  box-shadow: 0 0 15px var(--glow-success);
+}
+
+/* =====================================================
+   FORMS
+   ===================================================== */
+input, textarea, select {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-accent);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 20px var(--glow-color);
+  background-color: var(--input-focus-bg);
+}
+
+/* =====================================================
+   CARDS
+   ===================================================== */
+.card {
+  background-color: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255,255,255, 0.05);
+  border-top: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+[data-theme='light'] .card {
+  border: 1px solid var(--border-color);
+  border-top: 2px solid var(--brand-primary);
+}
+
+.card:hover {
+  border-top-color: var(--brand-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 -2px 20px var(--glow-color);
+}
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.70), 0 -2px 20px rgba(0, 240, 255, 0.10);
+}
+
+/* =====================================================
+   DATA METRICS
+   ===================================================== */
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  color: var(--brand-primary);
+}
+
+/* =====================================================
+   GLOBAL ANIMATIONS (shared across all pages)
+   ===================================================== */
+.spin { animation: spin 1s linear infinite; }
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes heroGlow {
+  0%, 100% { filter: drop-shadow(0 0 12px var(--brand-primary)); }
+  50%       { filter: drop-shadow(0 0 30px var(--brand-primary)); }
+}
+
+@keyframes loadDonut {
+  0%   { transform: scale(0.8) rotate(-45deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+}
+
+/* Skeleton loader pulse */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
+}
+
+.skeleton {
+  background: var(--border-color);
+  border-radius: var(--radius);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}

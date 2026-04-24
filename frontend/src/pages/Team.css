@@ -1,0 +1,156 @@
+/* =====================================================
+   Team.css — Flip Cards, Stats & Layout
+   ===================================================== */
+
+/* ── 3D Flip Card ──────────────────────────────────── */
+.team-card-outer {
+  perspective: 1000px;
+  min-height: 420px;
+  cursor: default;
+}
+
+.team-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.team-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.team-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s;
+}
+
+.team-card-front:hover,
+.team-card-back:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.team-card-back {
+  transform: rotateY(180deg);
+  align-items: flex-start;
+  text-align: left;
+  overflow-y: auto;
+}
+
+/* ── Card Internals ────────────────────────────────── */
+.team-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.team-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.team-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+}
+
+.team-role {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: var(--font-mono);
+  margin: 0 0 1rem;
+}
+
+.team-specialty {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.team-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: auto;
+}
+
+.team-hover-hint {
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+/* ── Back of card ──────────────────────────────────── */
+.team-quote {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.team-contributions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.team-contributions li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 640px) {
+  .team-card-outer,
+  .team-card-inner {
+    min-height: 480px;
+  }
+}

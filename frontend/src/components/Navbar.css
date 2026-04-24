@@ -1,0 +1,138 @@
+/* =====================================================
+   Navbar.css — Fully theme-aware, flat navigation
+   ===================================================== */
+
+.navbar {
+  background-color: var(--bg-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--nav-shadow);
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.logo-icon { color: var(--brand-primary); }
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 0.9rem;
+  flex-wrap: nowrap;
+}
+
+/* ── Nav Links ── */
+.nav-links {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.nav-links:hover { color: var(--brand-primary); }
+
+/* Active link indicator */
+.nav-links--active {
+  color: var(--brand-primary) !important;
+  position: relative;
+}
+.nav-links--active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--brand-primary);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--glow-color);
+}
+
+/* ── Theme Toggle ── */
+.theme-toggle {
+  background: var(--bg-accent);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.theme-toggle:hover {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+[data-theme='dark'] .theme-toggle:hover { color: #000; }
+
+/* ── Hamburger ── */
+.menu-icon {
+  display: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  padding: 0.35rem;
+  border-radius: var(--radius);
+  transition: color 0.2s ease;
+}
+.menu-icon:hover { color: var(--brand-primary); }
+
+/* ── Responsive ── */
+@media screen and (max-width: 1100px) {
+  .nav-menu {
+    flex-direction: column;
+    width: 100%;
+    position: absolute;
+    top: 70px;
+    left: -100%;
+    opacity: 1;
+    transition: all 0.4s ease;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+    z-index: 999;
+  }
+
+  .nav-menu.active {
+    left: 0;
+    opacity: 1;
+  }
+
+  .menu-icon { display: flex; }
+
+  .nav-links { font-size: 1rem; }
+  .nav-links--active::after { display: none; }
+}
