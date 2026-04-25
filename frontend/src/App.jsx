@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
+import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
 import About from './pages/About';
 import HowItWorks from './pages/HowItWorks';
@@ -61,6 +62,7 @@ function App() {
         </main>
         <Footer />
         <BackToTop />
+        <ChatBot />
       </div>
     </Router>
   );

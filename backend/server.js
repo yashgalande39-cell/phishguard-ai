@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const db = require('./db');
 const { initializeMLEngine, analyzeWithML } = require('./ml-engine');
+const chatRouter = require('./chat');
 
 const app = express();
 
@@ -39,6 +40,18 @@ const generalLimiter = rateLimit({
 });
 
 app.use('/api/', generalLimiter);
+
+// Chat limiter — 20 AI requests per minute per IP
+const chatLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many chat requests. Please wait a moment.' }
+});
+
+// Mount chat router
+app.use('/api/chat', chatLimiter, chatRouter);
 
 // API Routes
 

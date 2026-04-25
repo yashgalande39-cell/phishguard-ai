@@ -1,4 +1,4 @@
-# 🛡️ PhishGuard AI — Real-Time Phishing Detection Platform
+  # 🛡️ PhishGuard AI — Real-Time Phishing Detection Platform
 
 > An AI-powered, full-stack cybersecurity platform for detecting phishing URLs and malicious emails in real time using Naive Bayes NLP and multi-vector heuristic analysis.
 
