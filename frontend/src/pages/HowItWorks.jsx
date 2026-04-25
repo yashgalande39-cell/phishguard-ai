@@ -74,7 +74,7 @@ function HowItWorks() {
 
         {/* ── SECTION 2: ARCHITECTURE DIAGRAM ─────────────── */}
         <section>
-          <h2 className="hiw-section-title"><Network size={32} /> Enterprise System Architecture</h2>
+          <h2 className="hiw-section-title"><Network size={32} /> Full-Stack System Architecture</h2>
           <div className="arch-diagram-wrapper">
             <div className="arch-flow-landscape">
 

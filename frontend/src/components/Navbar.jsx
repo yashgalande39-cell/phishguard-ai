@@ -1,11 +1,19 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Shield, Moon, Sun, Menu, X } from 'lucide-react';
+import { Shield, Moon, Sun, Menu, X, LogIn, UserCircle } from 'lucide-react';
+
 import './Navbar.css';
 
 function Navbar({ theme, toggleTheme }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/';
+  };
 
   const navLinkClass = ({ isActive }) =>
     isActive ? 'nav-links nav-links--active' : 'nav-links';
@@ -39,10 +47,22 @@ function Navbar({ theme, toggleTheme }) {
           <li className="nav-item"><NavLink to="/implementation" className={navLinkClass} onClick={close}>Impl.</NavLink></li>
           <li className="nav-item"><NavLink to="/contact" className={navLinkClass} onClick={close}>Contact</NavLink></li>
 
-          <li className="nav-item theme-btn-container">
+          <li className="nav-item theme-btn-container" style={{ display:'flex', gap:'1rem', alignItems:'center' }}>
             <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
+            {user ? (
+              <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginLeft:'0.5rem' }}>
+                <span style={{ fontSize:'0.85rem', color:'var(--text-secondary)', display:'none', '@media (min-width: 960px)': { display:'inline' } }}>{user.username}</span>
+                <button onClick={handleLogout} className="btn btn-outline" style={{ padding:'0.4rem 0.8rem', fontSize:'0.8rem', display:'flex', alignItems:'center', gap:'0.4rem' }}>
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <NavLink to="/auth" className="btn btn-primary" style={{ padding:'0.4rem 1rem', fontSize:'0.8rem', display:'flex', alignItems:'center', gap:'0.4rem', textDecoration:'none' }} onClick={close}>
+                <LogIn size={14}/> Login
+              </NavLink>
+            )}
           </li>
         </ul>
       </div>

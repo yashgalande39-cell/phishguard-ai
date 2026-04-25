@@ -2,7 +2,7 @@ const natural = require('natural');
 const axios = require('axios');
 
 // ============================================================================
-// 1. DATASET FEEDS (Enterprise Architecture Integration)
+// 1. DATASET FEEDS (PhishGuard Engine Integration)
 // ============================================================================
 // Phishing.Database Feed (Maintained by Mitchell Krog)
 const PHISHING_DATABASE_FEED = 'https://raw.githubusercontent.com/mitchellkrogza/Phishing.Database/master/phishing-links-ACTIVE.txt';
@@ -41,6 +41,17 @@ const homographRegex = /[асеорху]/;
 // Top targeted brands
 const safeBrands = ['paypal', 'apple', 'google', 'microsoft', 'amazon', 'netflix', 'facebook', 'bank', 'chase', 'wellsfargo', 'meta', 'whatsapp', 'icloud'];
 
+// Suspicious TLDs (Statistical reputation)
+const suspiciousTlds = ['.xyz', '.top', '.icu', '.site', '.info', '.biz', '.gdn', '.monster', '.loan', '.click', '.date', '.work'];
+
+// Known URL shorteners (often used in phishing)
+const urlShorteners = ['bit.ly', 't.co', 'tinyurl.com', 'is.gd', 'buff.ly', 'goo.gl', 'shorte.st'];
+
+// Typosquatting/Bitquatting character map
+const bitquattingMap = {
+    'o': ['0'], 'i': ['1', 'l'], 'l': ['1', 'i'], 'e': ['3'], 'a': ['4', '@'], 's': ['5', '$'], 'g': ['9', 'q'], 't': ['7']
+};
+
 function tokenizeUrl(url) {
     let cleanUrl = url.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
     return cleanUrl.split(/[\.\/\-?=&#]/).filter(t => t.length > 1);
@@ -53,7 +64,7 @@ function tokenizeEmail(text) {
 
 async function initializeMLEngine() {
     try {
-        console.log("[ML-Engine] Initializing Deep Neural Networks via Distributed Datasets...");
+        console.log("[ML-Engine] Initializing Machine Learning Engine via Public Datasets...");
         
         // 1. Phishing.Database Feed (Malicious Training Data)
         let phishingUrls = ['login-paypal.com', 'secure-bank-update.net', 'verify-account-info.com'];
@@ -78,7 +89,7 @@ async function initializeMLEngine() {
             classifier.addDocument(tokenizeUrl(url), 'phishing');
         }
 
-        console.log(`[ML-Engine] Ingesting Alexa Top Sites Array to baseline legitimate enterprise network structures...`);
+        console.log(`[ML-Engine] Ingesting Alexa Top Sites Array to baseline legitimate domain structures...`);
         for (const url of safeUrls) {
             alexaTopSites.add(url);
             classifier.addDocument(tokenizeUrl(url), 'safe');
@@ -200,6 +211,49 @@ function runURLHeuristics(cleanUrl, domainPart) {
         localKeywordsFound.push(`Phishing Keywords (${anomalyKws.join(',')})`);
     }
 
+    // 8. TLD Reputation Analysis
+    const tld = '.' + domainTokens[domainTokens.length - 1];
+    if (suspiciousTlds.includes(tld)) {
+        modScore += 0.25;
+        localKeywordsFound.push(`Suspicious TLD Reputation (${tld})`);
+    }
+
+    // 9. URL Shortener Detection
+    if (urlShorteners.some(s => domainPart === s || domainPart.endsWith('.' + s))) {
+        modScore += 0.3;
+        localKeywordsFound.push("URL Shortener Detected (Anonymized Redirect)");
+    }
+
+    // 10. Typosquatting/Bitquatting Check (Targeting Safe Brands)
+    for (const brand of safeBrands) {
+        // Create variations of the brand
+        let isTyposquat = false;
+        for (let token of domainTokens) {
+            if (token === brand) continue; // It is the actual brand
+            
+            // Basic Levenshtein would be better but let's use a simpler heuristic for now
+            // If the token is very similar to a brand but not exact
+            if (token.length >= brand.length - 1 && token.length <= brand.length + 1) {
+                // Check for common char substitutions
+                let substituted = token.toLowerCase();
+                for (let [orig, subs] of Object.entries(bitquattingMap)) {
+                    for (let sub of subs) {
+                        substituted = substituted.split(sub).join(orig);
+                    }
+                }
+                if (substituted === brand && token !== brand) {
+                    isTyposquat = true;
+                    break;
+                }
+            }
+        }
+        if (isTyposquat) {
+            modScore += 0.5;
+            localKeywordsFound.push(`Typosquatting/Bitquatting Attempt (${brand})`);
+            break;
+        }
+    }
+
     return { modScore, localKeywordsFound, subCount };
 }
 
@@ -313,6 +367,21 @@ function analyzeWithML(inputData, type = 'url') {
         if (psychHits.length > 0) {
             finalScore += (psychHits.length * 0.15);
             details.keywords_found.push(`SpamAssassin NLP Hits (${psychHits.join(', ')})`);
+        }
+
+        // Psychological Trigger Detection (Fear, Urgency, Authority)
+        const triggers = {
+            'Urgency': ['immediately', 'as soon as possible', 'within 24 hours', 'hurry', 'quickly', 'limited time'],
+            'Fear': ['suspended', 'deleted', 'terminated', 'blocked', 'unauthorized', 'penalty', 'legal action', 'security breach'],
+            'Authority': ['official', 'administrator', 'system', 'security department', 'government', 'authorized', 'police']
+        };
+
+        for (let [category, triggerKws] of Object.entries(triggers)) {
+            const found = triggerKws.filter(kw => lowerInput.includes(kw));
+            if (found.length > 0) {
+                finalScore += 0.2;
+                details.keywords_found.push(`Psychological Trigger: ${category} (${found.slice(0, 2).join(', ')})`);
+            }
         }
 
         // ML Classification

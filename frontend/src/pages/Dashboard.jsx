@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { RefreshCcw, Loader, ShieldAlert, ShieldCheck, Activity, BrainCircuit, ShieldQuestion, LayoutDashboard, X, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { RefreshCcw, Loader, ShieldAlert, ShieldCheck, Activity, BrainCircuit, ShieldQuestion, LayoutDashboard, X, Download, ChevronLeft, ChevronRight, FileJson, FileText } from 'lucide-react';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import { API_BASE } from '../api';
 import Toast from '../components/Toast';
 
@@ -49,6 +51,13 @@ function ScanDrawer({ scan, onClose }) {
               </div>
             </div>
           )}
+          <button 
+            onClick={() => exportSinglePDF(scan)} 
+            className="btn btn-primary" 
+            style={{ width:'100%', marginTop:'1rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem' }}
+          >
+            <FileText size={18}/> Download PDF Report
+          </button>
         </div>
       </div>
     </div>
@@ -78,7 +87,9 @@ function Dashboard() {
   const fetchHistory = async () => {
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/api/history`);
+      const user = JSON.parse(localStorage.getItem('user'));
+      const url = user ? `${API_BASE}/api/history?user_id=${user.id}` : `${API_BASE}/api/history`;
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch history');
       setScans(await res.json());
     } catch (err) { setError(err.message); }
@@ -131,6 +142,54 @@ function Dashboard() {
     setToast({ message: `Exported ${filteredScans.length} records to CSV.`, type: 'success' });
   };
 
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(filteredScans, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'phishguard_scans.json'; a.click();
+    setToast({ message: `Exported ${filteredScans.length} records to JSON.`, type: 'success' });
+  };
+
+  const exportSinglePDF = (scan) => {
+    const doc = new jsPDF();
+    doc.setFontSize(22); doc.setTextColor(0, 240, 255); doc.text("PhishGuard AI — Analysis Report", 20, 25);
+    doc.setFontSize(10); doc.setTextColor(150); doc.text(`Generated on ${new Date().toLocaleString()}`, 20, 32);
+    
+    doc.setDrawColor(200); doc.line(20, 38, 190, 38);
+
+    doc.setFontSize(14); doc.setTextColor(0); doc.text("Scan Summary", 20, 50);
+    doc.autoTable({
+        startY: 55,
+        head: [['Field', 'Detail']],
+        body: [
+            ['Scan ID', `SYS-${scan.id}`],
+            ['Verdict', scan.result.toUpperCase()],
+            ['Confidence', `${(scan.confidence_score * 100).toFixed(0)}%`],
+            ['Timestamp', new Date(scan.created_at).toLocaleString()],
+            ['Input Data', scan.input_data]
+        ],
+        theme: 'striped',
+        headStyles: { fillColor: [0, 240, 255] }
+    });
+
+    let details = {}; try { details = JSON.parse(scan.details_json); } catch {}
+    if (details && Object.keys(details).length > 0) {
+        doc.text("Heuristic Insights", 20, doc.lastAutoTable.finalY + 15);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            head: [['Indicator', 'Status/Value']],
+            body: [
+                ['Blocklist Match', details.in_blocklist ? 'MALICIOUS' : 'CLEAN'],
+                ['Subdomains', `${details.subdomain_count || 0} levels`],
+                ['IP Detected', details.ip_detected ? 'YES' : 'NO'],
+                ['ML Class', details.ml_classification || 'N/A'],
+                ['Flagged Keywords', (details.keywords_found || []).join(', ') || 'None']
+            ],
+            theme: 'grid'
+        });
+    }
+
+    doc.save(`phishguard_report_sys_${scan.id}.pdf`);
+  };
+
   const kpiStyle = (active) => ({
     cursor: 'pointer', transition: 'all 0.2s ease',
     outline: active ? '2px solid var(--brand-primary)' : 'none',
@@ -151,7 +210,12 @@ function Dashboard() {
           <p style={{ color:'var(--text-secondary)', marginTop:'0.5rem' }}>Live metrics. Auto-refreshing every 10s when tab is active.</p>
         </div>
         <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
-          {scans.length > 0 && <button onClick={exportCSV} className="btn btn-outline" style={{ fontSize:'0.85rem' }}><Download size={16}/> Export CSV</button>}
+          {scans.length > 0 && (
+            <>
+              <button onClick={exportCSV} className="btn btn-outline" style={{ fontSize:'0.85rem' }}><Download size={16}/> CSV</button>
+              <button onClick={exportJSON} className="btn btn-outline" style={{ fontSize:'0.85rem' }}><FileJson size={16}/> JSON</button>
+            </>
+          )}
           <button onClick={() => { setLoading(true); fetchHistory(); }} className="btn btn-outline" disabled={loading}>
             <RefreshCcw size={18} className={loading ? 'spin' : ''}/> Sync Now
           </button>
@@ -172,21 +236,26 @@ function Dashboard() {
 
       {!loading && !error && scans.length > 0 && (<>
         {/* KPI Cards — clickable filters */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px,1fr))', gap:'2rem', marginBottom:'2rem' }}>
-          <div className="card" style={{ display:'flex', alignItems:'center', gap:'2rem', padding:'2rem', ...kpiStyle(filterVerdict === null) }} onClick={() => handleKpiFilter(null)} title="Show all scans">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px,1fr))', gap:'1.5rem', marginBottom:'2rem' }}>
+          <div className="card" style={{ display:'flex', alignItems:'center', gap:'1.5rem', padding:'1.5rem', ...kpiStyle(filterVerdict === null) }} onClick={() => handleKpiFilter(null)} title="Show all scans">
             <BrainCircuit size={32} style={{ color:'var(--brand-primary)' }}/>
-            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.85rem', letterSpacing:'1.5px', display:'block' }}>TOTAL SCANS</span>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.5rem', fontWeight:600, color:'var(--brand-primary)', textShadow:'0 0 15px currentColor' }}>{stats.total}</span></div>
+            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.75rem', letterSpacing:'1.5px', display:'block' }}>TOTAL SCANS</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.2rem', fontWeight:600, color:'var(--brand-primary)', textShadow:'0 0 15px currentColor' }}>{stats.total}</span></div>
           </div>
-          <div className="card" style={{ display:'flex', alignItems:'center', gap:'2rem', padding:'2rem', ...kpiStyle(filterVerdict === 'Phishing Detected') }} onClick={() => handleKpiFilter('Phishing Detected')} title="Filter: Phishing only">
+          <div className="card" style={{ display:'flex', alignItems:'center', gap:'1.5rem', padding:'1.5rem', ...kpiStyle(filterVerdict === 'Phishing Detected') }} onClick={() => handleKpiFilter('Phishing Detected')} title="Filter: Phishing only">
             <ShieldAlert size={32} style={{ color:'var(--brand-danger)' }}/>
-            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.85rem', letterSpacing:'1.5px', display:'block' }}>MALICIOUS BLOCKS</span>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.5rem', fontWeight:600, color:'var(--brand-danger)', textShadow:'0 0 15px currentColor' }}>{stats.phishing}</span></div>
+            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.75rem', letterSpacing:'1.5px', display:'block' }}>MALICIOUS BLOCKS</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.2rem', fontWeight:600, color:'var(--brand-danger)', textShadow:'0 0 15px currentColor' }}>{stats.phishing}</span></div>
           </div>
-          <div className="card" style={{ display:'flex', alignItems:'center', gap:'2rem', padding:'2rem', ...kpiStyle(filterVerdict === 'Suspicious') }} onClick={() => handleKpiFilter('Suspicious')} title="Filter: Suspicious only">
+          <div className="card" style={{ display:'flex', alignItems:'center', gap:'1.5rem', padding:'1.5rem', ...kpiStyle(filterVerdict === 'Suspicious') }} onClick={() => handleKpiFilter('Suspicious')} title="Filter: Suspicious only">
             <Activity size={32} style={{ color:'var(--brand-warning)' }}/>
-            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.85rem', letterSpacing:'1.5px', display:'block' }}>AVG RISK CONFIDENCE</span>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.5rem', fontWeight:600, color:'var(--text-primary)', textShadow:'0 0 15px currentColor' }}>{stats.avgConf}%</span></div>
+            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.75rem', letterSpacing:'1.5px', display:'block' }}>SUSPICIOUS THREATS</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.2rem', fontWeight:600, color:'var(--brand-warning)', textShadow:'0 0 15px currentColor' }}>{stats.suspicious}</span></div>
+          </div>
+          <div className="card" style={{ display:'flex', alignItems:'center', gap:'1.5rem', padding:'1.5rem' }} title="Global average confidence across all scans">
+            <ShieldCheck size={32} style={{ color:'var(--brand-success)' }}/>
+            <div><span style={{ color:'var(--text-secondary)', fontSize:'0.75rem', letterSpacing:'1.5px', display:'block' }}>AVG RISK CONFIDENCE</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:'2.2rem', fontWeight:600, color:'var(--text-primary)', textShadow:'0 0 15px currentColor' }}>{stats.avgConf}%</span></div>
           </div>
         </div>
 

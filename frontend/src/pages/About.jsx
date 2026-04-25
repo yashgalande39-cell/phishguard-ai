@@ -49,7 +49,7 @@ function About() {
           <Code2 size={40} style={{ color: 'var(--brand-primary)', marginBottom: '1.5rem' }} />
           <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Scalable Full-Stack Engineering</h3>
           <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-            Built using a strict decoupled architecture. The frontend relies on React for blazing-fast cryptographic TLS interaction, while the API gateway handles high-load asynchronous traffic scaling via Node.js/Express. Results and telemetry are piped cleanly into relational MySQL clusters, ensuring forensic retention without bottlenecking user processing vectors.
+            Built using a strict decoupled architecture. The frontend relies on React for blazing-fast cryptographic TLS interaction, while the API gateway handles high-load asynchronous traffic scaling via Node.js/Express. Results and telemetry are piped cleanly into a local MySQL database, ensuring forensic retention without bottlenecking user processing vectors.
           </p>
         </div>
       </div>

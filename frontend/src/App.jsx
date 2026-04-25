@@ -16,6 +16,8 @@ import Team from './pages/Team';
 import NotFound from './pages/NotFound';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Auth from './pages/Auth';
+
 
 function App() {
   // Persist theme in localStorage
@@ -55,6 +57,8 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/auth" element={<Auth />} />
+
               {/* 404 catch-all */}
               <Route path="*" element={<NotFound />} />
             </Routes>

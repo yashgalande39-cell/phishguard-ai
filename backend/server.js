@@ -5,11 +5,12 @@ require('dotenv').config();
 const db = require('./db');
 const { initializeMLEngine, analyzeWithML } = require('./ml-engine');
 const chatRouter = require('./chat');
+const { router: authRouter, authenticateToken } = require('./auth');
 
 const app = express();
 
 // CORS — allow only the Vite dev frontend (update for production)
-const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173').split(',');
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 console.log('[Backend] Allowed Origins:', allowedOrigins);
 app.use(cors({
     origin: (origin, callback) => {
@@ -53,8 +54,9 @@ const chatLimiter = rateLimit({
     message: { error: 'Too many chat requests. Please wait a moment.' }
 });
 
-// Mount chat router
+// Mount routers
 app.use('/api/chat', chatLimiter, chatRouter);
+app.use('/api/auth', authRouter);
 
 // API Routes
 
@@ -104,12 +106,46 @@ app.post('/api/analyze', analyzeLimiter, async (req, res) => {
     }
 });
 
+// 1b. POST /api/analyze/secure (Authenticated)
+app.post('/api/analyze/secure', authenticateToken, analyzeLimiter, async (req, res) => {
+    try {
+        const { input_data, type = 'url' } = req.body;
+        const userId = req.user.id;
+
+        if (!input_data) return res.status(400).json({ error: "Input data is required" });
+
+        const analysis = analyzeWithML(input_data, type);
+        const detailsJson = JSON.stringify(analysis.details);
+
+        const query = `INSERT INTO scans (user_id, input_data, result, confidence_score, details_json) VALUES (?, ?, ?, ?, ?)`;
+        const [result] = await db.execute(query, [userId, input_data, analysis.overall_result, analysis.overall_confidence, detailsJson]);
+
+        res.status(200).json({
+            id: result.insertId,
+            input_data,
+            result: analysis.overall_result,
+            confidence_score: analysis.overall_confidence,
+            analysis_details: analysis.details
+        });
+    } catch (error) {
+        console.error("Error in secure analyze:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // 2. GET /api/history
 app.get('/api/history', async (req, res) => {
     try {
-        const query = `SELECT * FROM scans ORDER BY created_at DESC LIMIT 50`;
-        const [rows] = await db.query(query);
-        // Parse details_json back to object if present
+        const userId = req.query.user_id;
+        let query = `SELECT * FROM scans ORDER BY created_at DESC LIMIT 10000`;
+        let params = [];
+
+        if (userId) {
+            query = `SELECT * FROM scans WHERE user_id = ? ORDER BY created_at DESC LIMIT 10000`;
+            params = [userId];
+        }
+
+        const [rows] = await db.query(query, params);
         const parsedRows = rows.map(row => ({
             ...row,
             analysis_details: row.details_json ? JSON.parse(row.details_json) : null

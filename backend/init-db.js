@@ -11,7 +11,7 @@ async function initializeDatabase() {
             password: process.env.DB_PASSWORD || '',
             port: process.env.DB_PORT || 3306,
             database: process.env.DB_NAME, // Select database immediately
-            ssl: process.env.DB_SSL === 'true' || process.env.DB_PORT ? { rejectUnauthorized: false } : null
+            ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : null
         });
 
         console.log("Reading db-setup.sql...");

@@ -305,11 +305,8 @@ function Implementation() {
         <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span>Base URL:</span>
           <code style={{ color: 'var(--brand-primary)', fontFamily: 'var(--font-mono)', background: 'rgba(0,240,255,0.06)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)' }}>
-            {import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api
+            http://localhost:5000/api
           </code>
-          <span style={{ fontSize: '0.8rem', color: 'var(--brand-success)', fontFamily: 'var(--font-mono)', background: 'rgba(0,255,157,0.08)', padding: '0.15rem 0.5rem', borderRadius: 99, border: '1px solid rgba(0,255,157,0.3)' }}>
-            {import.meta.env.VITE_API_BASE_URL ? '● Production' : '● Development'}
-          </span>
           &nbsp;— All endpoints accept and return <code>application/json</code>.
         </p>
 

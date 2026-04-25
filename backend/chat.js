@@ -176,7 +176,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(apiKey, { apiVersion: 'v1' });
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       systemInstruction: SYSTEM_PROMPT,

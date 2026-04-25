@@ -16,9 +16,14 @@ function Home() {
     if (!inputData.trim()) return;
     setLoading(true); setResult(null); setError(null); setFeedbackSent(false);
     try {
-      const response = await fetch(`${API_BASE}/api/analyze`, {
+      const token = localStorage.getItem('token');
+      const endpoint = token ? '/api/analyze/secure' : '/api/analyze';
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${API_BASE}${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ input_data: inputData, type: scanType })
       });
       const data = await response.json();
