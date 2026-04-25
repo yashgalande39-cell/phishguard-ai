@@ -10,11 +10,14 @@ const app = express();
 
 // CORS — allow only the Vite dev frontend (update for production)
 const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173').split(',');
+console.log('[Backend] Allowed Origins:', allowedOrigins);
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        console.log('[Backend] CORS Request from Origin:', origin);
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log('[Backend] CORS BLOCKED for Origin:', origin);
             callback(new Error('CORS policy: Not allowed from ' + origin));
         }
     }

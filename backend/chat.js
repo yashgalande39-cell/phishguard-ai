@@ -119,6 +119,7 @@ Q: Is email content stored? A: Submitted email text is stored as scan history in
 == RESPONSE GUIDELINES ==
 - Keep replies concise (2-5 sentences max unless detail is requested).
 - Use **bold** for key terms. Use \`code\` for technical terms/paths.
+- If the user asks about what PhishGuard AI is, explain it clearly using the PLATFORM OVERVIEW section. DO NOT respond with a generic greeting.
 - If the user is asking about a specific feature on a different page, mention "You can find this on the [Page Name] page — navigate using the top navbar."
 - If the user asks to scan something, remind them the scanner is on the Home page (/).
 - If asked about something completely unrelated to PhishGuard AI or cybersecurity, say: "I'm specialized in PhishGuard AI and phishing security topics. For that question, a general-purpose AI might be more helpful!"
@@ -198,7 +199,11 @@ router.post('/', async (req, res) => {
     });
 
     // Augment user message with page context
-    const contextualMessage = `[Context: ${pageContext}]\n\nUser question: ${message}`;
+    let processedMessage = message;
+    if (message.trim().toLowerCase() === 'what is phishguard ai?') {
+        processedMessage = 'Can you explain what the PhishGuard AI platform does?';
+    }
+    const contextualMessage = `[Context: ${pageContext}]\n\nUser question: ${processedMessage}`;
     const result = await chat.sendMessage(contextualMessage);
     const reply = result.response.text().trim();
 
