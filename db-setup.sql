@@ -1,5 +1,6 @@
-CREATE DATABASE IF NOT EXISTS phishing_detection_db;
-USE phishing_detection_db;
+-- Database setup script
+-- Tables will be created in the database specified in your environment variables (e.g., defaultdb)
+
 
 CREATE TABLE IF NOT EXISTS scans (
     id INT PRIMARY KEY AUTO_INCREMENT,
